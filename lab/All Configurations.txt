@@ -1,0 +1,1228 @@
+DSW1
+Note: I did it only on DSW_CIVIL1 and ASW-A1 so it is not required to type in password credentials during configurations and practise simulations.
+
+console config, ssh, vty
+
+enable algorithm-type scrypt secret supersecure1
+username admin algorithm-type scrypt supersecure2
+
+configuring console line:
+line console 0
+login local
+exec-timeout 30
+logging synchronous
+
+
+CIVIL ENGINEERING etherchannels betwen distribution switches, lacp, both are active.
+DSW-CIVIL1(config)#int range g1/9-10
+DSW-CIVIL1(config-if-range)#channel-group 1 mode active
+
+DSW-CIVIL2(config)#int range g1/9-10
+DSW-CIVIL2(config-if-range)#channel-group 1 mode active
+
+3. Configure all links between Access and Distribution switches, including the EtherChannels, as trunk links.
+Explicitly disable DTP on all ports.
+Set each trunk’s native VLAN to VLAN 1000 (unused).
+
+DSW-CIVIL1(config)#int po1
+DSW-CIVIL1(config-if)#sw mode trunk
+DSW-CIVIL1(config-if)#sw nonegotiate
+DSW-CIVIL1(config-if)#sw trunk native vlan 1000
+
+DSW-CIVIL2(config)#int po1
+DSW-CIVIL2(config-if)#sw mode trunk
+DSW-CIVIL2(config-if)#sw nonegotiate
+DSW-CIVIL2(config-if)#sw trunk native vlan 1000
+
+
+DSW-CIVIL1(config)#int range g1/3-4,g1/7-8
+DSW-CIVIL1(config-if-range)#sw mode trunk
+DSW-CIVIL1(config-if-range)#sw nonegotiate
+DSW-CIVIL1(config-if-range)#sw trunk native vlan 1000
+
+DSW-CIVIL2(config)#int range g1/3-4,g1/7-8
+DSW-CIVIL2(config-if-range)#sw mode trunk
+DSW-CIVIL2(config-if-range)#sw nonegotiate
+DSW-CIVIL2(config-if-range)#sw trunk native vlan 1000
+
+ASW-A1(config)#int range g0/1-2
+ASW-A1(config-if-range)#sw mode trunk
+ASW-A1(config-if-range)#sw nonegotiate
+ASW-A1(config-if-range)#sw trunk native vlan 1000
+
+Repeat on other access switches.
+
+Configure each Access switch’s access port. 
+a. LWAPs will not use FlexConnect
+b. PCs in VLAN 10, Phones in VLAN 20
+c. SRV1 in VLAN 30
+
+configuring access switch and wireless AP connection.
+ASW-A2(config)#int f0/3
+ASW-A2(config-if)#sw mode access
+ASW-A2(config-if)#sw access vlan 99
+Repeat on other switches.
+
+configuring access ports on access switches.
+ASW-A1(config)#int f0/1
+ASW-A1(config-if)#sw mode access
+ASW-A1(config-if)#sw voice vlan 11
+ASW-A1(config-if)#sw access vlan 101
+
+ASW-A1(config)#int range f0/2-5
+ASW-A1(config-if-range)#sw mode access
+ASW-A1(config-if-range)#sw access vlan 101
+
+ASW-A2(config)#int f0/1
+ASW-A2(config-if)#sw mode access
+ASW-A2(config-if)#sw voice vlan 11
+ASW-A2(config-if)#sw access vlan 101
+
+ASW-A2(config)#int f0/2
+ASW-A2(config-if)#sw mode access
+ASW-A2(config-if)#sw access vlan 101
+
+ASW-A3(config)#int f0/1
+ASW-A3(config-if)#sw mode access
+ASW-A3(config-if)#sw voice vlan 11
+ASW-A3(config-if)#sw access vlan 102
+
+ASW-A4(config)#int range f0/1-2
+ASW-A4(config-if-range)#sw mode access
+ASW-A4(config-if-range)#sw access vlan 50
+
+##TO DO
+In University of Civil Engineering, allow VLANs 101, 102, 103, 99, 11, 50 on dedicated trunks following vlan topology.
+In University of Electrical Engineering, allow VLANs 201, 202, 203, 99, 11, 50 on dedicated trunks following vlan topology.
+In University of Mechanical Engineering, allow VLANs 301, 302, 303,304, 99, 11, 50 on dedicated trunks following vlan topology.
+In University of Architecture, allow VLANs 401,402, 99, 11, 50, and Wifi vlans 20,25,30 because wlc is in that university. on dedicated trunks following vlan topology.
+
+ASW-A1(config)#int range g0/1-2
+ASW-A1(config-if-range)#sw trunk allowed vlan 11,99,101
+ASW-A2(config)#int range g0/1-2
+ASW-A2(config-if-range)#sw trunk allowed vlan 11,99,101
+ASW-A3(config)#int range g0/1-2
+ASW-A3(config-if-range)#sw trunk allowed vlan 11,99,102
+ASW-A4(config)#int range g0/1-2
+ASW-A4(config-if-range)#sw trunk allowed vlan 50,99
+
+DSW-CIVIL2(config)#do sh cdp neigh
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone
+Device ID    Local Intrfce   Holdtme    Capability   Platform    Port ID
+CSW1         Gig 1/5          147                    3650        Gig 1/0/6
+CSW2         Gig 1/6          147                    3650        Gig 1/0/6
+DSW-CIVIL1   Por 1            165                    IE3400      Gig 1/9
+DSW-CIVIL1   Por 1            165                    IE3400      Gig 1/10
+DSW-CIVIL1   Por 1            165                    IE3400      Por 1
+ASW-A1       Gig 1/3          161            S       2960        Gig 0/2
+ASW-A2       Gig 1/4          168            S       2960        Gig 0/2
+ASW-A3       Gig 1/7          124            S       2960        Gig 0/2
+ASW-A4       Gig 1/8          156            S       2960        Gig 0/2
+DSW-CIVIL2(config)#int g1/3
+DSW-CIVIL2(config-if)#sw trunk allowed vlan 11,99,101
+DSW-CIVIL2(config)#int g1/4
+DSW-CIVIL2(config-if)#sw trunk allowed vlan 11,99,101
+DSW-CIVIL2(config)#int g1/7
+DSW-CIVIL2(config-if)#sw trunk allowed vlan 11,99,102
+DSW-CIVIL2(config)#int g1/8
+DSW-CIVIL2(config-if)#sw trunk allowed vlan 50,99
+DSW-CIVIL2(config)#int po1
+DSW-CIVIL2(config-if)#sw trunk allowed vlan 11,50,99,101,102
+
+DSW-CIVIL1(config)#do sh cdp neigh
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone
+Device ID    Local Intrfce   Holdtme    Capability   Platform    Port ID
+CSW1         Gig 1/5          161                    3650        Gig 1/0/5
+CSW2         Gig 1/6          160                    3650        Gig 1/0/5
+DSW-CIVIL2   Por 1            149                    IE3400      Gig 1/9
+DSW-CIVIL2   Por 1            149                    IE3400      Gig 1/10
+DSW-CIVIL2   Por 1            149                    IE3400      Por 1
+ASW-A1       Gig 1/3          175            S       2960        Gig 0/1
+ASW-A2       Gig 1/4          122            S       2960        Gig 0/1
+ASW-A3       Gig 1/7          138            S       2960        Gig 0/1
+ASW-A4       Gig 1/8          170            S       2960        Gig 0/1
+	
+DSW-CIVIL2(config)#int g1/3
+DSW-CIVIL1(config-if)#sw trunk allowed vlan 11,99,101
+DSW-CIVIL1(config)#int g1/4
+DSW-CIVIL1(config-if)#sw trunk allowed vlan 11,99,101
+DSW-CIVIL1(config)#int g1/7
+DSW-CIVIL1(config-if)#sw trunk allowed vlan 11,99,102
+DSW-CIVIL1(config)#int g1/8
+DSW-CIVIL1(config-if)#sw trunk allowed vlan 50,99
+DSW-CIVIL1(config)#int po1
+DSW-CIVIL1(config-if)#sw trunk allowed vlan 11,50,99,101,102
+
+Create vlans and configure apropriate SVIs.
+DSW-CIVIL1(config)#vlan 11
+DSW-CIVIL1(config-vlan)#name Phones
+DSW-CIVIL1(config)#vlan 50
+DSW-CIVIL1(config-vlan)#name Servers
+DSW-CIVIL1(config)#vlan 99
+DSW-CIVIL1(config-vlan)#name Management
+DSW-CIVIL1(config)#vlan 101
+DSW-CIVIL1(config-vlan)#name Hydrology_and_Construction_PCs
+DSW-CIVIL1(config)#vlan 102
+DSW-CIVIL1(config-vlan)#name Laboratory
+
+DSW-CIVIL2(config)#vlan 11
+DSW-CIVIL2(config-vlan)#name Phones
+DSW-CIVIL2(config)#vlan 50
+DSW-CIVIL2(config-vlan)#name Servers
+DSW-CIVIL2(config)#vlan 99
+DSW-CIVIL2(config-vlan)#name Management
+DSW-CIVIL2(config)#vlan 101
+DSW-CIVIL2(config-vlan)#name Hydrology_and_Construction_PCs
+DSW-CIVIL2(config)#vlan 102
+DSW-CIVIL2(config-vlan)#name Laboratory
+
+Configure other Universities similary with their respective vlans, reffer to the vlans table.
+Notice that department for Hydrology and Construction on University of Civil Engineering and
+departments for Mechantronics and Aerospace on University of Mechanical Engineering are part of the same vlans in order to demonstrate layer 2
+protocols as a practise.
+
+Configuring access switch at University of architecture where is wlc located in admin's office.
+ASW-D1(config)#int g0/2
+ASW-D1(config-if)#sw mode trunk
+ASW-D1(config-if)#sw trunk allowed vlan 99,20,25,30
+ASW-D1(config-if)#sw trunk native vlan 99
+ASW-D1(config-if)#sw nonegotiate
+
+
+
+
+
+
+Configuring ip addresses
+R1(config)#int g0/1
+R1(config-if)#no shut
+R1(config-if)#ip address 10.255.0.1 255.255.255.252
+
+
+CSW1(config)#int g1/0/1
+CSW1(config-if)#no switchport
+CSW1(config-if)#ip address 10.255.0.2 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int range g1/0/2-4
+CSW1(config-if-range)#no sw
+CSW1(config-if-range)#channel-group 1 mode active
+
+CSW1(config)#int po1
+CSW1(config-if)#no sw
+CSW1(config-if)#ip address 10.255.0.9 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int g1/0/5
+CSW1(config-if)#no sw
+CSW1(config-if)#no shut
+CSW1(config-if)#ip address 10.255.0.13 255.255.255.252
+
+CSW1(config)#int g1/0/6
+CSW1(config-if)#ip address 10.255.0.17 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int g1/0/7
+CSW1(config-if)#no sw
+CSW1(config-if)#ip address 10.255.0.21 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int g1/0/8
+CSW1(config-if)#ip address 10.255.0.25 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int g1/0/9
+CSW1(config-if)#no sw
+CSW1(config-if)#ip address 10.255.0.29 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int g1/0/10
+CSW1(config-if)#no sw
+CSW1(config-if)#ip address 10.255.0.33 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int g1/0/11
+CSW1(config-if)#ip address 10.255.0.37 255.255.255.252
+CSW1(config-if)#no shut
+
+CSW1(config)#int g1/0/12
+CSW1(config-if)#no swp
+CSW1(config-if)#ip address 10.255.0.41 255.255.255.252
+CSW1(config-if)#no shut
+
+Repeat for CSW2, reffer to the IP addresses text file.
+
+DSW-CIVIL1(config)#int g1/5
+DSW-CIVIL1(config-if)#no sw
+DSW-CIVIL1(config-if)#ip address 10.255.0.14 255.255.255.252
+DSW-CIVIL1(config-if)#no shut
+
+DSW-CIVIL1(config)#int g1/6
+DSW-CIVIL1(config-if)#no sw
+DSW-CIVIL1(config-if)#ip address 10.255.0.46 255.255.255.252
+DSW-CIVIL1(config-if)#no shut
+
+Repeat for other distribution switches, reffer to the IP addresses text file.
+
+Don't forget to enable ip routing on all distribution and core switches.
+CSW1(config)#ip routing
+
+Configure loopback interfaces on all route-able devices.
+R1(config)#int lo0
+R1(config-if)#ip address 10.255.0.100 255.255.255.255
+Repeat for other devices, reffer to the IP Address text file.
+
+Configuring HSRP and SVI's on the distribution switches. Active routers will be chosen based on load-balancing traffic and also alligned with stp root bridges.
+Reffer to the vlan table text file for ip addresses.
+
+DSW-CIVIL1(config)#int vlan 101
+DSW-CIVIL1(config-if)#ip address 10.10.1.2 255.255.255.0
+DSW-CIVIL1(config-if)#standby version 2
+DSW-CIVIL1(config-if)#standby 1 ip 10.10.1.1
+DSW-CIVIL1(config-if)#standby 1 priority 105
+DSW-CIVIL1(config-if)#standby 1 preempt
+
+DSW-CIVIL2(config)#int vlan 101
+DSW-CIVIL2(config-if)#ip address 10.10.1.3 255.255.255.0
+DSW-CIVIL2(config-if)#standby version 2
+DSW-CIVIL2(config-if)#standby 1 ip 10.10.1.1
+
+DSW-CIVIL2(config)#int vlan 102
+DSW-CIVIL2(config-if)#ip address 10.10.2.3 255.255.255.0
+DSW-CIVIL2(config-if)#standby version 2
+DSW-CIVIL2(config-if)#standby 2 ip 10.10.2.1
+DSW-CIVIL2(config-if)#standby 2 priority 105
+DSW-CIVIL2(config-if)#standby 2 preempt
+
+DSW-CIVIL1(config)#int vlan 102
+DSW-CIVIL1(config-if)#ip address 10.10.2.2 255.255.255.0
+DSW-CIVIL1(config-if)#standby version 2
+DSW-CIVIL1(config-if)#standby 2 ip 10.10.2.1
+
+DSW-CIVIL1(config)#int vlan 11
+DSW-CIVIL1(config-if)#ip address 10.10.3.2 255.255.255.0
+DSW-CIVIL1(config-if)#standby version 2
+DSW-CIVIL1(config-if)#standby 11 ip 10.10.3.1
+DSW-CIVIL1(config-if)#standby 11 priority 105
+DSW-CIVIL1(config-if)#standby 11 preempt
+
+DSW-CIVIL2(config)#int vlan 11
+DSW-CIVIL2(config-if)#ip address 10.10.3.3 255.255.255.0
+DSW-CIVIL2(config-if)#standby version 2
+DSW-CIVIL2(config-if)#standby 11 ip 10.10.3.1
+
+DSW-CIVIL1(config)#int vlan 50
+DSW-CIVIL1(config-if)#ip address 10.10.50.2 255.255.255.0
+DSW-CIVIL1(config-if)#standby version 2
+DSW-CIVIL1(config-if)#standby 50 ip 10.10.50.1
+
+DSW-CIVIL1(config)#int vlan 99
+DSW-CIVIL1(config-if)#ip address 10.99.0.2 255.255.255.192
+DSW-CIVIL1(config-if)#standby version 2
+DSW-CIVIL1(config-if)#standby 99 ip 10.99.0.1
+DSW-CIVIL1(config-if)#standby 99 priority 105
+DSW-CIVIL1(config-if)#standby 99 preempt
+
+DSW-CIVIL2(config)#int vlan 50
+DSW-CIVIL2(config-if)#ip address 10.10.50.3 255.255.255.0
+DSW-CIVIL2(config-if)#standby version 2
+DSW-CIVIL2(config-if)#standby 50 ip 10.10.50.1
+DSW-CIVIL2(config-if)#standby 50 priority 105
+DSW-CIVIL2(config-if)#standby 50 preempt
+
+DSW-CIVIL2(config)#int vlan 99
+DSW-CIVIL2(config-if)#ip address 10.99.0.3 255.255.255.192
+DSW-CIVIL2(config-if)#standby version 2
+DSW-CIVIL2(config-if)#standby 99 ip 10.99.0.1
+
+Repeat for other distribution switches following the same logic, reffer to the vlan table text file for ip addresses.
+
+Configure the management IP addresses on the Access switches (interface VLAN 99), and configure the appropriate subnet’s first usable address as the default gateway.
+ASW-A1(config)#ip default-gateway 10.99.0.1
+ASW-A1(config)#int vlan 99
+ASW-A1(config-if)#ip address 10.99.0.4 255.255.255.192
+
+ASW-A2(config)#ip default-gateway 10.99.0.1
+ASW-A2(config)#int vlan 99
+ASW-A2(config-if)#ip address 10.99.0.5 255.255.255.192
+
+ASW-A3(config)#ip default-gateway 10.99.0.1
+ASW-A3(config)#int vlan 99
+ASW-A3(config-if)#ip address 10.99.0.6 255.255.255.192
+
+ASW-A4(config)#ip default-gateway 10.99.0.1
+ASW-A4(config)#int vlan 99
+ASW-A4(config-if)#ip address 10.99.0.7 255.255.255.192
+
+Repeat for all access switches in other universities. Reffer to the vlan table text file for ip addresses.
+
+Manually configure SRV1 and SRV2 static IP settings.
+SRV1
+Default Gateway: 10.10.50.1
+IPv4 Address: 10.10.50.4
+Subnet Mask: 255.255.255.0
+SRV2
+Default Gateway: 10.10.50.1
+IPv4 Address: 10.10.50.5
+Subnet Mask: 255.255.255.0
+
+
+
+By default swtiches in packet tracer run standard PVST+.
+Configure Rapid PVST+ on all Access and Distribution switches.
+DSW-CIVIL1(config)#spanning-tree mode rapid-pvst
+
+Repeat the command on all distribution and access switches.
+Note: Make sure to often press save when doing these spanning tree configs packet tracer know to crash sometimes.
+
+Allign HSRP active router with root bridge for each respective vlan.
+DSW-CIVIL1(config)#span vlan 11,99,101 priority 0
+DSW-CIVIL1(config)#span vlan 102,50 priority 4096
+DSW-CIVIL2(config)#span vlan 101,11,99 priority 4096
+DSW-CIVIL2(config)#span vlan 102,50 priority 0
+Make similar configurations on distribution switches in other university, allign HSRP active router with root bridge for each respective vlan.
+
+Enable PortFast and BPDU Guard on all ports connected to end hosts (including WLC1).
+
+ASW-A1(config)#int range f0/1-5
+ASW-A1(config-if-range)#span portfast
+ASW-A1(config-if-range)#span bpduguard enable
+
+ASW-A2(config)#int range f0/1-3
+ASW-A2(config-if-range)#span portfast
+ASW-A2(config-if-range)#span bpduguard enable
+
+ASW-A3(config)#int f0/1
+ASW-A3(config-if)#span portfast
+ASW-A3(config-if)#span bpduguard enable
+
+ASW-A4(config)#int range f0/1-2
+ASW-A4(config-if-range)#span portfast
+ASW-A4(config-if-range)#span bpduguard enable
+
+Do the same on all access ports on all access switches on other Universities. Use trunk parameter to configure portfast on trunk port connecting WLC1.
+
+ASW-D1(config)#int f0/2
+ASW-D1(config-if)#span portfast trunk
+ASW-D1(config-if)#span bpduguard enable
+
+ASW-D1(config)#int f0/1
+ASW-D1(config-if)#span portfast
+ASW-D1(config-if)#span bpduguard enable
+
+Configure OSPF on R1 (LAN-facing interfaces) and all Core and Distribution switches (all Layer-3 interfaces).
+Use process ID 1 and Area 0.
+Configure each device’s RID to match the loopback interface IP.
+Make sure OSPF is enabled on all loopback interfaces, too. Loopback interfaces should be passive.
+Configure all physical connections between OSPF neighbors to use a network type that doesn’t elect a DR/BDR. 
+Note: default-information originate always is not supported by packet tracer so just use it without always.
+
+R1(config)#router ospf 1
+R1(config-router)#passive-int lo0
+R1(config-router)#router-id 10.255.0.100
+R1(config-router)#default-information originate
+R1(config-router)#auto-cost reference-bandwidth 10000
+
+R1(config)#int g0/1
+R1(config-if)#ip ospf 1 area 0
+R1(config-if)#ip ospf network point-to-point
+
+R1(config)#int lo0
+R1(config-if)#ip ospf 1 area 0
+
+R2(config)#router ospf 1
+R2(config-router)#passive-int lo0
+R2(config-router)#router-id 10.255.0.101
+R2(config-router)#default-information originate
+R2(config-router)#auto-cost reference-bandwidth 10000
+R2(config)#int g0/1
+R2(config-if)#ip ospf 1 area 0
+R2(config-if)#ip ospf network point-to-point
+R2(config)#int lo0
+R2(config-if)#ip ospf 1 area 0
+
+CSW1(config)#router ospf 1
+CSW1(config-router)#passive-int lo0
+CSW1(config-router)#router-id 10.255.0.102
+CSW1(config-router)#auto-cost reference-bandwidth 10000
+CSW1(config-router)#do sh ip int brief | exclude unassigned
+Interface              IP-Address      OK? Method Status                Protocol 
+Port-channel1          10.255.0.9      YES manual up                    up   
+GigabitEthernet1/0/1   10.255.0.2      YES manual up                    up 
+GigabitEthernet1/0/5   10.255.0.13     YES manual up                    up 
+GigabitEthernet1/0/6   10.255.0.17     YES manual up                    up 
+GigabitEthernet1/0/7   10.255.0.21     YES manual up                    up 
+GigabitEthernet1/0/8   10.255.0.25     YES manual up                    up 
+GigabitEthernet1/0/9   10.255.0.29     YES manual up                    up 
+GigabitEthernet1/0/10  10.255.0.33     YES manual up                    up 
+GigabitEthernet1/0/11  10.255.0.37     YES manual up                    up 
+GigabitEthernet1/0/12  10.255.0.41     YES manual up                    up 
+Loopback0              10.255.0.102    YES manual up                    up 
+CSW1(config-router)#network 10.255.0.9 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.2 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.13 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.17 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.21 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.25 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.29 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.33 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.37 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.41 0.0.0.0 area 0
+CSW1(config-router)#network 10.255.0.102 0.0.0.0 area 0
+CSW1(config)#int range g1/0/1,g1/0/5-12
+CSW1(config-if-range)#ip ospf network point-to-point
+
+Same configurations go for CSW2 although i used subnet mask with network command to speed up the configuration because its the lab exercise it should be done with exact mask on real systems.
+In packet tracer on these core switches lacp channels point to point network type doesnt work so i left it as default which is broadcast ethernet.
+
+CSW2(config)#router ospf 1
+CSW2(config-router)#passive-int lo0
+CSW2(config-router)#router-id 10.255.0.103
+CSW2(config-router)#auto-cost reference-bandwidth 10000
+CSW2(config-router)#do sh ip int brief | ex un
+Interface              IP-Address      OK? Method Status                Protocol 
+Port-channel1          10.255.0.10     YES manual up                    up 
+GigabitEthernet1/0/1   10.255.0.6      YES manual up                    up 
+GigabitEthernet1/0/5   10.255.0.45     YES manual up                    up 
+GigabitEthernet1/0/6   10.255.0.49     YES manual up                    up 
+GigabitEthernet1/0/7   10.255.0.53     YES manual up                    up 
+GigabitEthernet1/0/8   10.255.0.57     YES manual up                    up 
+GigabitEthernet1/0/9   10.255.0.61     YES manual up                    up 
+GigabitEthernet1/0/10  10.255.0.65     YES manual up                    up 
+GigabitEthernet1/0/11  10.255.0.69     YES manual up                    up 
+GigabitEthernet1/0/12  10.255.0.73     YES manual up                    up 
+Loopback0              10.255.0.103    YES manual up                    up 
+CSW2(config-router)#network 10.255.0.0 0.0.0.255 area 0
+CSW2(config)#int range g1/0/1,g1/0/5-12
+CSW2(config-if-range)#ip ospf network point-to-point
+
+Each Distribution switch’s SVIs (except the Management VLAN SVI) should be passive.
+DSW-CIVIL1(config)#router ospf 1   
+DSW-CIVIL1(config-router)#do sh ip int brief | exclude un
+Interface              IP-Address      OK? Method Status                Protocol 
+GigabitEthernet1/5     10.255.0.14     YES manual up                    up 
+GigabitEthernet1/6     10.255.0.46     YES manual up                    up 
+Loopback0              10.255.0.104    YES manual up                    up 
+Vlan11                 10.10.3.2       YES manual up                    up 
+Vlan50                 10.10.50.2      YES manual up                    up 
+Vlan99                 10.99.0.2       YES manual up                    up 
+Vlan101                10.10.1.2       YES manual up                    up 
+Vlan102                10.10.2.2       YES manual up                    up
+DSW-CIVIL1(config-router)#passive-int lo0
+DSW-CIVIL1(config-router)#passive-int vlan 11
+DSW-CIVIL1(config-router)#passive-int vlan 50
+DSW-CIVIL1(config-router)#passive-int vlan 101
+DSW-CIVIL1(config-router)#passive-int vlan 102
+DSW-CIVIL1(config-router)#router-id 10.255.0.104
+DSW-CIVIL1(config-router)#auto-cost reference-bandwidth 10000
+DSW-CIVIL1(config-router)#network 10.255.0.14 0.0.0.0 area 0
+DSW-CIVIL1(config-router)#network 10.255.0.46 0.0.0.0 area 0
+DSW-CIVIL1(config-router)#network 10.255.0.104 0.0.0.0 area 0
+DSW-CIVIL1(config-router)#network 10.10.3.2 0.0.0.0 area 0
+DSW-CIVIL1(config-router)#network 10.10.50.2 0.0.0.0 area 0
+DSW-CIVIL1(config-router)#network 10.99.0.2 0.0.0.0 area 0
+DSW-CIVIL1(config-router)#network 10.10.1.2 0.0.0.0 area 0
+DSW-CIVIL1(config-router)#network 10.10.2.2 0.0.0.0 area 0
+DSW-CIVIL1(config)#int range g1/5-6
+DSW-CIVIL1(config-if-range)#ip ospf network point-to-point
+
+Repeat the configurations for all other distribuiton switches accross universities, make sure to configure all SVI interfaces as passive except management vlan 99 which will be used to make neighbor adjacency.
+
+
+Configure interfaces connecting to the ISP routers as dhcp client. We will make dual multihomed topology,
+where connections via g0/0 to the isp's are main ones and connections via g0/2 are back up ones, so their routes
+will be configured with AD set to 2. 
+
+R1(config)#int g0/0
+R1(config-if)#no shut
+R1(config-if)#ip address dhcp
+
+R1(config)#int g0/2
+R1(config-if)#no shut
+R1(config-if)#ip address dhcp
+
+R1(config)#ip route 0.0.0.0 0.0.0.0 203.0.113.1
+R1(config)#ip route 0.0.0.0 0.0.0.0 198.51.100.1 2
+
+R2(config)#int g0/0
+R2(config-if)#no shut
+R2(config-if)#ip address dhcp
+
+R2(config)#int g0/2
+R2(config-if)#no shut
+R2(config-if)#ip address dhcp
+
+R2(config)#ip route 0.0.0.0 0.0.0.0 198.51.100.5
+R2(config)#ip route 0.0.0.0 0.0.0.0 203.0.113.5 2
+
+ISP simulation config:
+
+IP addresses:
+| Link                | Network         |
+| ------------------- | --------------- |
+| ISP1 g0/1 ↔ R1 g0/0 | 203.0.113.0/30  |
+| ISP1 g0/2 ↔ R2 g0/2 | 203.0.113.4/30  |
+| ISP2 g0/2 ↔ R1 g0/2 | 198.51.100.0/30 |
+| ISP2 g0/1 ↔ R2 g0/0 | 198.51.100.4/30 |
+
+ISP1 configurations:
+hostname ISP1
+
+interface g0/1
+ description TO-R1
+ ip address 203.0.113.1 255.255.255.252
+ no shutdown
+
+interface g0/2
+ description TO-R2
+ ip address 203.0.113.5 255.255.255.252
+ no shutdown
+
+ip dhcp excluded-address 203.0.113.1
+ip dhcp excluded-address 203.0.113.5
+
+ip dhcp pool R1-INET
+ network 203.0.113.0 255.255.255.252
+ default-router 203.0.113.1
+ dns-server 8.8.8.8
+
+ip dhcp pool R2-INET
+ network 203.0.113.4 255.255.255.252
+ default-router 203.0.113.5
+ dns-server 8.8.8.8
+
+ISP2 configurations:
+hostname ISP2
+
+interface g0/2
+ description TO-R1
+ ip address 198.51.100.1 255.255.255.252
+ no shutdown
+
+interface g0/1
+ description TO-R2
+ ip address 198.51.100.5 255.255.255.252
+ no shutdown
+
+ip dhcp excluded-address 198.51.100.1
+ip dhcp excluded-address 198.51.100.5
+
+ip dhcp pool R1-BACKUP
+ network 198.51.100.0 255.255.255.252
+ default-router 198.51.100.1
+ dns-server 8.8.8.8
+
+ip dhcp pool R2-BACKUP
+ network 198.51.100.4 255.255.255.252
+ default-router 198.51.100.5
+ dns-server 8.8.8.8
+
+Save and restart packet tracer if there are no bindings in dhcp binding table packet tracer. Then it should work.
+
+We will configure SRV1 as dhcp server, and SRV2 as dns server.
+SRV1 is in vlan 50 and has static ip address 10.10.50.4
+SRV2 has static ip address 10.10.50.5
+On each distribution switch on apropriate svi interfaces we will configure dhcp relay agent to send dhcp broadcast's to the dhcp server.
+Do not configure svi 99, management will use static ip addresses.
+
+DSW-CIVIL1(config)#int vlan 11
+DSW-CIVIL1(config-if)#ip helper-address 10.10.50.4
+DSW-CIVIL1(config)#int vlan 101
+DSW-CIVIL1(config-if)#ip helper-address 10.10.50.4
+DSW-CIVIL1(config)#int vlan 102
+DSW-CIVIL1(config-if)#ip helper-address 10.10.50.4
+
+DSW-CIVIL2(config)#int vlan 11
+DSW-CIVIL2(config-if)#ip helper-address 10.10.50.4
+DSW-CIVIL2(config)#int vlan 101
+DSW-CIVIL2(config-if)#ip helper-address 10.10.50.4
+DSW-CIVIL2(config)#int vlan 102
+DSW-CIVIL2(config-if)#ip helper-address 10.10.50.4
+
+Repeat for all other appropriate interfaces and distribution switches.
+
+Configure DHCP on SRV1.
+In packet tracer do go to following setting in server gui.
+Server → Services → DHCP → On
+Make dhcp pools
+Configure HSRP VIP as default gateway for each vlan as appropriate.
+Leave first 10 addresses of subnet excluded from dhcp leasing.
+Configure SRV2 as dns server with static ip address 10.10.50.5
+Note: I separated dhcp and dns on different servers so that packet tracer doesn't explode.
+
+POOL1
+name: Civil_Hydrology_and_Construction101
+Default Gateway: 10.10.1.1
+DNS Server:10.10.50.5
+Start IP: 10.10.1.10
+Subnet Mask: 255.255.255.0
+
+POOL2
+name: Civil_Laboratory102
+Default Gateway: 10.10.2.1
+DNS Server:10.10.50.5
+Start IP: 10.10.2.10
+Subnet Mask: 255.255.255.0
+
+POOL3
+name: Civil_Phones11
+Default Gateway: 10.10.3.1
+DNS Server:10.10.50.5
+Start IP: 10.10.3.10
+Subnet Mask: 255.255.255.0
+
+etc...
+Make pools for the other vlans and subnets in a similat manner...
+
+Test it from random pc device:
+
+C:\>ipconfig /renew
+
+   IP Address......................: 10.10.1.11
+   Subnet Mask.....................: 255.255.255.0
+   Default Gateway.................: 10.10.1.1
+   DNS Server......................: 10.10.50.5
+
+Configure DNS on SRV2.
+Go into services -> dns and add few entries for testing purposes.
+google.com 172.253.62.100 (as A record)
+youtube.com 152.250.31.93
+
+Configure all routers and switches to use domain name massivedynamic.local and use SRV2 as their DNS server.
+ip domain-name massivedynamic.local
+ip name-server 10.10.50.5
+
+Configure NTP:
+
+Configure R1 and R2 to sync their time with google's ntp servers. Use 2 servers to act as a backup and accuracy.
+R1(config)#ntp server 216.239.35.4
+R1(config)#ntp server 216.239.35.8
+R2(config)#ntp server 216.239.35.4
+R2(config)#ntp server 216.239.35.8
+
+configure this command on R1 and R2 to sync the hardware clock to the time learned from google ntp servers.
+R1(config)#ntp update-calendar
+R2(config)#ntp update-calendar
+
+Configure this on both R1 and R2 (it doesnt work in packet tracer)
+R1(config)#ntp source loopback0
+R2(config)#ntp source loopback0
+
+Configure R1 and R2 as ntp symmetric peers: (it doesnt work in packet tracer)
+R1(config)#ntp peer 10.255.0.101
+R2(config)#ntp peer 10.255.0.100
+
+Configure all core, distribution and access switches as ntp clients to the R1 and R2.
+ntp server 10.255.0.100
+ntp server 10.255.0.101
+
+Configure fake simulated google servers on isp router.
+ISP1
+ISP1(config)#interface loopback0
+ISP1(config-if)# description FAKE-GOOGLE-NTP-1
+ISP1(config-if)# ip address 216.239.35.4 255.255.255.255
+ISP1(config-if)#ntp master 1
+
+ISP2
+ISP2(config)#interface loopback0
+ISP2(config-if)# description FAKE-GOOGLE-NTP-2
+ISP2(config-if)# ip address 216.239.35.8 255.255.255.255
+ISP2(config-if)#ntp master 1
+
+
+Configure the SNMP community string on all routers and switches. The string should allow GET messages, but not SET messages
+
+snmp-server community SECURESTRING ro
+
+
+Configure Syslog on all routers and switches:
+Send Syslog messages to SRV2. Do not log debugging level messages.
+Enable logging to the buffer. Reserve 8192 bytes of memory for the buffer.
+
+logging 10.10.50.5
+logging trap informational  (packet tracer only supports debugging level so configure that instead.
+logging buffered 8192
+
+
+
+
+Configure SSH for secure remote access on all routers and switches.
+Use the largest modulus size for the RSA keys.
+Allow SSHv2 connections only.
+Create standard ACL 1, only allowing packets sourced from Admin's Office subnet. Apply the ACL to all VTY lines to restrict SSH access.
+Allow only SSH connections to the VTY lines.
+Require users to log in with a local user account when connecting via SSH.
+Configure synchronous logging on the VTY lines.
+
+username admin privilege 15 secret supersecure2
+crypto key generate rsa
+4096
+ip ssh version 2
+access-list 1 permit 10.99.0.192 0.0.0.63
+line vty 0 15
+access-class 1 in
+transport input ssh
+login local
+logging synchronous
+exec-timeout 30 0
+
+Repeat commands on all routers and switches.
+
+Manually configure admin's PC in admin office on the university od architecture.
+Default Gateway: 10.99.0.193
+DNS Server: 10.10.50.5
+IPv4 Address: 10.99.0.203
+Subnet Mask: 255.255.255.192
+
+Testing ssh connection:
+C:\>ssh -l admin 10.99.0.3
+Password: 
+DSW-CIVIL2#
+
+You can use loopback int addresses to ssh into routers and core switches.
+C:\>ssh -l admin 10.255.0.100
+Password: 
+R1#
+
+Add server SRV3 which will be accessible from public internet and will host http services.
+Default Gateway:10.10.50.1
+DNS Server:10.10.50.5
+IP Address:10.10.50.6
+Subnet Mask:255.255.255.0
+
+Configure static NAT to enable hosts on the Internet to access SRV3.
+
+R1(config)#ip nat inside source static 10.10.50.6 203.0.113.113
+R1(config)#do sh cdp neigh
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone
+Device ID    Local Intrfce   Holdtme    Capability   Platform    Port ID
+ISP2         Gig 0/2          144            R       C2900       Gig 0/2
+ISP1         Gig 0/0          144            R       C2900       Gig 0/1
+CSW1         Gig 0/1          144                    3650        Gig 1/0/1
+
+Configure pool-based dynamic PAT on R1 to enable hosts to access the Internet.
+Subnet range given by the ISP is 203.0.113.112/29
+
+R1(config)#int range g0/0,g0/2
+R1(config-if-range)#ip nat outside
+R1(config)#int g0/1
+R1(config-if)#ip nat inside
+
+R2(config)#int range g0/0,g0/2
+R2(config-if-range)#ip nat outside
+R2(config)#int g0/1
+R2(config-if)#ip nat inside
+
+R1(config)#access-list 2 permit 10.10.1.0 0.0.0.255
+R1(config)#access-list 2 permit 10.10.2.0 0.0.0.255
+R1(config)#access-list 2 permit 10.10.3.0 0.0.0.255
+R1(config)#access-list 2 permit 10.20.1.0 0.0.0.255
+R1(config)#access-list 2 permit 10.20.2.0 0.0.0.255
+R1(config)#access-list 2 permit 10.20.3.0 0.0.0.255
+R1(config)#access-list 2 permit 10.20.4.0 0.0.0.255
+R1(config)#access-list 2 permit 10.30.1.0 0.0.0.255
+R1(config)#access-list 2 permit 10.30.2.0 0.0.0.255
+R1(config)#access-list 2 permit 10.30.3.0 0.0.0.255
+R1(config)#access-list 2 permit 10.30.4.0 0.0.0.255
+R1(config)#access-list 2 permit 10.40.1.0 0.0.0.255
+R1(config)#access-list 2 permit 10.40.2.0 0.0.0.255
+R1(config)#access-list 2 permit 10.40.3.0 0.0.0.255
+R1(config)#access-list 2 permit 10.99.0.0 0.0.0.255
+
+R1(config)#ip nat pool PAT_POOL_endhosts_to_internet 203.0.113.114 203.0.113.118 netmask 255.255.255.248
+R1(config)#ip nat inside source list 2 pool PAT_POOL_endhosts_to_internet overload
+
+Note: In Reality we would need nat backup system with pool from the ISP2 associated with the back up interface g0/2 on R1. For this project purposes i ignored this.
+
+
+
+Configure extended acl's to allow university PC's to access services on servers (dns, http, https).
+
+ip access-list extended VLAN101_SECURITY
+
+remark ### Block management VLAN ###
+deny ip 10.10.1.0 0.0.0.255 10.99.0.0 0.0.0.255
+
+remark ### Allow DNS ###
+permit udp 10.10.1.0 0.0.0.255 host 10.10.50.5 eq 53
+permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.5 eq 53
+
+remark ### Allow HTTP/HTTPS to public server ###
+permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.6 eq 80
+permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.6 eq 443
+
+remark ### Block rest of server farm ###
+deny ip 10.10.1.0 0.0.0.255 10.10.50.0 0.0.0.255
+
+remark ### Permit all remaining traffic ###
+permit ip any any
+
+interface vlan 101
+ ip access-group VLAN101_SECURITY in
+
+
+DSW-CIVIL1(config)#ip access-list extended VLAN101_SECURITY
+DSW-CIVIL1(config-ext-nacl)#remark ### Block management VLAN ###
+DSW-CIVIL1(config-ext-nacl)#deny ip 10.10.1.0 0.0.0.255 10.99.0.0 0.0.0.255
+DSW-CIVIL1(config-ext-nacl)#remark ### Allow DNS ###
+DSW-CIVIL1(config-ext-nacl)#permit udp 10.10.1.0 0.0.0.255 host 10.10.50.5 eq 53
+DSW-CIVIL1(config-ext-nacl)#permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.5 eq 53
+DSW-CIVIL1(config-ext-nacl)#remark ### Allow HTTP/HTTPS to public server ###
+DSW-CIVIL1(config-ext-nacl)#permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.6 eq 80
+DSW-CIVIL1(config-ext-nacl)#permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.6 eq 443
+DSW-CIVIL1(config-ext-nacl)#remark ### Block rest of server farm ###
+DSW-CIVIL1(config-ext-nacl)#deny ip 10.10.1.0 0.0.0.255 10.10.50.0 0.0.0.255
+DSW-CIVIL1(config-ext-nacl)#remark ### Permit all remaining traffic ###
+DSW-CIVIL1(config-ext-nacl)#permit ip any any
+DSW-CIVIL1(config-ext-nacl)#interface vlan 101
+DSW-CIVIL1(config-if)# ip access-group VLAN101_SECURITY in
+
+DSW-CIVIL2(config)#ip access-list extended VLAN101_SECURITY
+DSW-CIVIL2(config-ext-nacl)#remark ### Block management VLAN ###
+DSW-CIVIL2(config-ext-nacl)#deny ip 10.10.1.0 0.0.0.255 10.99.0.0 0.0.0.255
+DSW-CIVIL2(config-ext-nacl)#remark ### Allow DNS ###
+DSW-CIVIL2(config-ext-nacl)#permit udp 10.10.1.0 0.0.0.255 host 10.10.50.5 eq 53
+DSW-CIVIL2(config-ext-nacl)#permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.5 eq 53
+DSW-CIVIL2(config-ext-nacl)#remark ### Allow HTTP/HTTPS to public server ###
+DSW-CIVIL2(config-ext-nacl)#permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.6 eq 80
+DSW-CIVIL2(config-ext-nacl)#permit tcp 10.10.1.0 0.0.0.255 host 10.10.50.6 eq 443
+DSW-CIVIL2(config-ext-nacl)#remark ### Block rest of server farm ###
+DSW-CIVIL2(config-ext-nacl)#deny ip 10.10.1.0 0.0.0.255 10.10.50.0 0.0.0.255
+DSW-CIVIL2(config-ext-nacl)#remark ### Permit all remaining traffic ###
+DSW-CIVIL2(config-ext-nacl)#permit ip any any
+DSW-CIVIL2(config-ext-nacl)#interface vlan 101
+DSW-CIVIL2(config-if)# ip access-group VLAN101_SECURITY in
+
+Repeat the same configurations for vlan 102.
+
+ip access-list extended VLAN102_SECURITY
+
+remark ### Block management VLAN ###
+deny ip 10.10.2.0 0.0.0.255 10.99.0.0 0.0.0.255
+
+remark ### Allow DNS ###
+permit udp 10.10.2.0 0.0.0.255 host 10.10.50.5 eq 53
+permit tcp 10.10.2.0 0.0.0.255 host 10.10.50.5 eq 53
+
+remark ### Allow HTTP/HTTPS to public server ###
+permit tcp 10.10.2.0 0.0.0.255 host 10.10.50.6 eq 80
+permit tcp 10.10.2.0 0.0.0.255 host 10.10.50.6 eq 443
+
+remark ### Block rest of server farm ###
+deny ip 10.10.2.0 0.0.0.255 10.10.50.0 0.0.0.255
+
+remark ### Permit all remaining traffic ###
+permit ip any any
+
+interface vlan 102
+ ip access-group VLAN102_SECURITY in
+
+Do the similar appropriate configurations on other Universities.
+
+
+Configure Port Security on each Access switch's endhost port:
+Allow the minimum necessary number of MAC addresses on each port.
+SERVERS does not use virtualization, so it uses a single MAC address.
+Configure a violation mode that blocks invalid traffic without affecting valid traffic. The switches should send notifications when invalid traffic is detected. -> restrict
+Switches should automatically save the secure MAC addresses they learn to the running-config. -> sticky mac
+
+ASW-A1(config)#int f0/1
+ASW-A1(config-if)#sw port-security
+ASW-A1(config-if)#sw port-security maximum 2
+ASW-A1(config-if)#sw port-security violation restrict
+ASW-A1(config-if)#sw port-security mac-address sticky
+
+ASW-A1(config)#int range f0/2-5
+ASW-A1(config-if-range)#sw port-security
+ASW-A1(config-if-range)#sw port-security violation restrict
+ASW-A1(config-if-range)#sw port-security mac-address sticky
+
+ASW-A2(config)#int f0/1
+ASW-A2(config-if)#sw port-security
+ASW-A2(config-if)#sw port-security maximum 2
+ASW-A2(config-if)#sw port-security mac-address sticky
+ASW-A2(config-if)#sw port-security violation restrict
+	
+ASW-A2(config)#int range f0/2-3
+ASW-A2(config-if-range)#sw port-security
+ASW-A2(config-if-range)#sw port-security violation restrict
+ASW-A2(config-if-range)#sw port-security mac-address sticky
+
+ASW-A3(config)#int f0/1
+ASW-A3(config-if)#sw port-security
+ASW-A3(config-if)#sw port-security maximum 2
+ASW-A3(config-if)#sw port-security mac-address sticky
+ASW-A3(config-if)#sw port-security violation restrict
+
+(configure access port f0/3 to SRV3 i added its endhost device later so it is not in the configs at the start)
+ASW-A3(config)#int range f0/1-3
+ASW-A3(config-if-range)#sw port-security
+ASW-A3(config-if-range)#sw port-security violation restrict
+ASW-A3(config-if-range)#sw port-security mac-address sticky
+
+Do the similar configurations on other universities.
+
+
+Configure DHCP Snooping on all Access switches.
+Enable it for all active VLANs in each LAN.
+Trust the uplink ports.
+Disable insertion of DHCP Option 82.
+Set a DHCP rate limit of 15 pps on active untrusted ports.
+Set a higher limit (200 pps) on ASW-D1’s connection to WLC1.
+
+ASW-A1(config)#ip dhcp snooping
+ASW-A1(config)#ip dhcp snooping vlan 11,99,101
+ASW-A1(config)#no ip dhcp snooping information option
+
+ASW-A1(config)#int range g0/1-2
+ASW-A1(config-if-range)#ip dhcp snooping trust
+
+ASW-A1(config)#int range f0/1-5
+ASW-A1(config-if-range)#ip dhcp snooping limit rate 15
+
+
+ASW-A2(config)#ip dhcp snooping
+ASW-A2(config)#ip dhcp snooping vlan 11,99,101
+ASW-A2(config)#no ip dhcp snooping information option
+
+ASW-A2(config)#int range g0/1-2
+ASW-A2(config-if-range)#ip dhcp snooping trust
+
+ASW-A2(config)#int range f0/1-3
+ASW-A2(config-if-range)#ip dhcp snooping limit rate 15
+
+Configure the similar for the rest of the access switches. Dont forget to configure 200 instead of 15 for limit rate on interface that connects to the WLC.
+
+
+Configure DAI on all Access switches.
+Enable it for all active VLANs in each LAN.
+Trust the uplink ports.
+
+ASW-A1(config)#ip arp inspection vlan 10,99,101
+ASW-A1(config)#int range g0/1-2
+ASW-A1(config-if-range)#ip arp inspection trust
+
+Configure the rest of the access switches in a similar matter.
+
+
+WLC and Wi-Fi configurations:
+We will configure lightweight APs with WLC as centralized controller. All traffic between APs and WLC (control and data) will be tunneled so we configured access ports on interfaces that
+connects to the APs. Only the WLC will need a trunk port connection (f0/2 on ASW-D1).
+
+Configuration on connection between AP and access switch (in this example between AS-A2 and AP1)
+interface FastEthernet0/3
+ switchport access vlan 99
+ ip dhcp snooping limit rate 15
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky 
+ switchport port-security violation restrict 
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+
+f0/2 connects ASW-D1 to WLC:
+interface FastEthernet0/2
+ description TO-WLC1
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 20,25,30,99
+ switchport mode trunk
+ switchport nonegotiate
+ spanning-tree portfast trunk
+
+###IGNORE LEFT AS A NOTE ###
+Gave up from LAG because it bags in packet tracer so ignore bellow configurations
+interface FastEthernet0/2
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 20,25,30,99
+ ip dhcp snooping limit rate 200
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 1 mode on
+ spanning-tree portfast trunk
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/3
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 20,25,30,99
+ ip dhcp snooping limit rate 200
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 1 mode on
+ spanning-tree portfast trunk
+ spanning-tree bpduguard enable
+
+Configure LAG for redundancy on ASW-D1:
+ASW-D1(config)#int range f0/2-3
+ASW-D1(config-if-range)#channel-group 1 mode on
+ASW-D1(config)#int po1
+ASW-D1(config-if)#sw mode trunk
+ASW-D1(config-if)#sw trunk allowed vlan 20,25,30,99
+### IGNORE LEFT AS A NOTE ###
+
+
+
+ASW-D1(config)#vlan 20
+ASW-D1(config-vlan)# name STUDENT_WIFI
+ASW-D1(config-vlan)#vlan 25
+ASW-D1(config-vlan)# name EMPLOYEE_WIFI
+ASW-D1(config-vlan)#vlan 30
+ASW-D1(config-vlan)# name GUEST_WIFI
+
+
+
+In bellow section i will add vlans and SVIs for wifi. I will also configure all the necessery and appropriate configurations that i did for previous vlans during this project.
+
+Configuring HSRP:
+
+DSW-ARCH1(config)#vlan 20
+DSW-ARCH1(config-vlan)# name STUDENT_WIFI
+DSW-ARCH1(config-vlan)#vlan 25
+DSW-ARCH1(config-vlan)# name EMPLOYEE_WIFI
+DSW-ARCH1(config-vlan)#vlan 30
+DSW-ARCH1(config-vlan)# name GUEST_WIFI
+
+
+DSW-ARCH1(config)#interface Vlan20
+DSW-ARCH1(config-if)# description STUDENT_WIFI
+DSW-ARCH1(config-if)# ip address 10.40.4.2 255.255.255.0
+DSW-ARCH1(config-if)# ip helper-address 10.10.50.4
+DSW-ARCH1(config-if)# standby version 2
+DSW-ARCH1(config-if)# standby 20 ip 10.40.4.1
+
+DSW-ARCH1(config)#interface Vlan25
+DSW-ARCH1(config-if)# description EMPLOYEE_WIFI
+DSW-ARCH1(config-if)# ip address 10.40.5.2 255.255.255.0
+DSW-ARCH1(config-if)# ip helper-address 10.10.50.4
+DSW-ARCH1(config-if)# standby version 2
+DSW-ARCH1(config-if)# standby 25 ip 10.40.5.1
+DSW-ARCH1(config-if)# standby 25 priority 105
+DSW-ARCH1(config-if)# standby 25 preempt
+
+DSW-ARCH1(config)#interface Vlan30
+DSW-ARCH1(config-if)# description GUEST_WIFI
+DSW-ARCH1(config-if)# ip address 10.40.6.2 255.255.255.0
+DSW-ARCH1(config-if)# ip helper-address 10.10.50.4
+DSW-ARCH1(config-if)# standby version 2
+DSW-ARCH1(config-if)# standby 30 ip 10.40.6.1
+DSW-ARCH1(config-if)# standby 30 priority 105
+DSW-ARCH1(config-if)# standby 30 preempt
+
+
+DSW-ARCH2(config)#vlan 20
+DSW-ARCH2(config-vlan)# name STUDENT_WIFI
+DSW-ARCH2(config-vlan)#vlan 25
+DSW-ARCH2(config-vlan)# name EMPLOYEE_WIFI
+DSW-ARCH2(config-vlan)#vlan 30
+DSW-ARCH2(config-vlan)# name GUEST_WIFI
+
+DSW-ARCH2(config)#interface Vlan20
+DSW-ARCH2(config-if)# description STUDENT_WIFI
+DSW-ARCH2(config-if)# ip address 10.40.4.3 255.255.255.0
+DSW-ARCH2(config-if)# ip helper-address 10.10.50.4
+DSW-ARCH2(config-if)# standby version 2
+DSW-ARCH2(config-if)# standby 20 ip 10.40.4.1
+DSW-ARCH2(config-if)# standby 20 priority 105
+DSW-ARCH2(config-if)# standby 20 preempt
+
+DSW-ARCH2(config)#interface Vlan25
+DSW-ARCH2(config-if)# description EMPLOYEE_WIFI
+DSW-ARCH2(config-if)# ip address 10.40.5.3 255.255.255.0
+DSW-ARCH2(config-if)# ip helper-address 10.10.50.4
+DSW-ARCH2(config-if)# standby version 2
+DSW-ARCH2(config-if)# standby 25 ip 10.40.5.1
+
+DSW-ARCH2(config)#interface Vlan30
+DSW-ARCH2(config-if)# description GUEST_WIFI
+DSW-ARCH2(config-if)# ip address 10.40.6.3 255.255.255.0
+DSW-ARCH2(config-if)# ip helper-address 10.10.50.4
+DSW-ARCH2(config-if)# standby version 2
+DSW-ARCH2(config-if)# standby 30 ip 10.40.6.1
+
+
+
+Configuring OSPF:
+
+DSW-ARCH1(config)#router ospf 1
+DSW-ARCH1(config-router)#passive-interface Vlan20
+DSW-ARCH1(config-router)#passive-interface Vlan25
+DSW-ARCH1(config-router)#passive-interface Vlan30
+DSW-ARCH1(config-router)#network 10.40.4.2 0.0.0.0 area 0
+DSW-ARCH1(config-router)#network 10.40.5.2 0.0.0.0 area 0
+DSW-ARCH1(config-router)#network 10.40.6.2 0.0.0.0 area 0
+
+DSW-ARCH2(config)#router ospf 1
+DSW-ARCH2(config-router)#passive-interface Vlan20
+DSW-ARCH2(config-router)#passive-interface Vlan25
+DSW-ARCH2(config-router)#passive-interface Vlan30
+DSW-ARCH2(config-router)#network 10.40.4.3 0.0.0.0 area 0
+DSW-ARCH2(config-router)#network 10.40.5.3 0.0.0.0 area 0
+DSW-ARCH2(config-router)#network 10.40.6.3 0.0.0.0 area 0
+
+
+Allow wifi-vlans on trunk ports:
+ASW-D1 ↔ WLC
+ASW-D1 ↔ DSW-D1
+ASW-D1 ↔ DSW-D2
+DSW-D1 ↔ DSW-D2
+
+DSW1-ARCH1(config)#int g1/5
+DSW1-ARCH1(config-if)#sw trunk allowed vlan 20,25,30,99
+DSW1-ARCH1(config)#int po1
+DSW1-ARCH1(config-if)#sw trunk allowed vlan 11,99,401-402,20,25,30
+
+DSW-ARCH2(config)#int g1/5
+DSW-ARCH2(config-if)#sw trunk allowed vlan 20,25,30,99
+DSW-ARCH2(config)#int po1
+DSW-ARCH2(config-if)#sw trunk allowed vlan 11,99,401-402,20,25,30
+
+ASW-D1(config)#int range g0/1-2
+ASW-D1(config-if-range)#sw trunk allowed vlan 20,25,30,99
+
+
+
+Go in WLC management tab and configure:
+IPv4 Address: 10.99.0.200
+Subnet Mask 255.255.255.192
+Default Gateway 10.99.0.193
+DNS Server 10.10.50.5
+
+Go into admin's PC and in web browser enter:
+https://10.99.0.200/
+
+Follow through the gui set up:
+admin
+Supersecure1
+
+Internal
+Partizan1945
+
+Passwords for PSK's:
+Student123
+
+Employees123
+
+Guest123
+
+
+Add ip helper address for vlan 99 on distribution switches.
+interface vlan 99
+ ip helper-address 10.10.50.4
+
+APs associated with wlc correctly and everything is set and checked multiple times. There is some bag in packet tracer where everything in wireless is 
+in management vlan i don't know...
+
+
+
+##TO DO IPv6 configuration
+
+
+
+
+
+
+
+
