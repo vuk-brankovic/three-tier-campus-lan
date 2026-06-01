@@ -16,7 +16,7 @@ Management (SSH, VTY Lines) | EtherChannels (L2, L3) | VLANs | VoIP | IP Address
 
 ## Chamber of Secrets
 
-There is a website containing a hidden message hosted on a server inside the Chamber of Secrets. Your task is to find it, starting from any PC in the University except the Admin's PC in his office. Just access the Command Prompt from any PC and start exploring! Follow the leads until you successfully reach the final message. Hint: Try visiting university website.
+There is a website containing a hidden message hosted on a server inside the Chamber of Secrets. Your task is to find it, starting from any PC in the University except the Admin's PC in his office. Just access the Command Prompt from any PC and start exploring! Follow the leads until you successfully reach the final message. Hint: Try visiting university website: http://university
 
 The solution can be found in the text file Chamber of Secrets.
 
