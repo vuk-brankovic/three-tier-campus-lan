@@ -1197,14 +1197,14 @@ Follow through the gui set up:
 admin
 Supersecure1
 
-Internal
-Partizan1945
-
 Passwords for PSK's:
+SSID: Students
 Student123
 
+SSID: Employees
 Employees123
 
+SSID: Guest
 Guest123
 
 
@@ -1212,8 +1212,8 @@ Add ip helper address for vlan 99 on distribution switches.
 interface vlan 99
  ip helper-address 10.10.50.4
 
-APs associated with wlc correctly and everything is set and checked multiple times. There is some bag in packet tracer where everything in wireless is 
-in management vlan i don't know...
+APs and Stations associated succesfully. Due to packet tracer limitations stations were not able to get IP address via dhcp, regardless dhcp configurations and pools
+for WI-FI were created.
 
 
 
