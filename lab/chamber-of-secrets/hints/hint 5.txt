@@ -1,0 +1,2 @@
+use https, it takes ~20sec for packet tracer to load website
+You might have to try twice because of the slow arp in packet tracer.
