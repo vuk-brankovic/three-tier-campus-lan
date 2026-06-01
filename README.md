@@ -4,7 +4,7 @@ Cisco Packet Tracer complete lab and design following a Three-Tier Campus LAN to
 
 ## Topology
 
-![Campus Topology](screenshots/topology.png)
+![Campus Topology](./lab/Topology.PNG)
 
 ## Overview
 
